@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/vineeth/GitHub/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/vineeth/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/vineeth/GitHub/CE_Masters/Mobile_Systems/casa0015-mobile-assessment/traveler/android/app/.cxx/RelWithDebInfo/4r1h1v4o/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/vineeth/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/vineeth/GitHub/CE_Masters/Mobile_Systems/casa0015-mobile-assessment/traveler/android/app/.cxx/RelWithDebInfo/4r1h1v4o/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
