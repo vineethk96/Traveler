@@ -1,4 +1,4 @@
-# REPLACE WITH YOUR APP NAME
+# Traveler
 
 This is the Final assessment template for CASA0014 - Please use this template and edit the relevant sections to personalise.
 This section has a short introduction to what the application is
@@ -21,3 +21,32 @@ Include a section that gives intructions on how to install the app or run it in 
 ##  Contact Details
 
 Having Contact Details is also good as it shows people how to get in contact with you if they'd like to contribute to the app. 
+
+
+## Commands
+
+Clean the Build
+```
+flutter clean
+```
+
+
+Grab all Dependencies
+```
+flutter pub get
+```
+
+
+Build the Icon and Splash Screen
+```
+dart run flutter_launcher_icons
+```
+
+Note: For android the same image is used for the splash and the app icon.
+TODO: Figure out how to adjust the 'branding' to have the app name in the splash page.
+
+Build the APK
+```
+flutter build apk
+```
+
