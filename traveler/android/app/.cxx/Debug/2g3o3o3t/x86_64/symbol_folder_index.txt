@@ -1,1 +1,0 @@
-/home/vineeth/GitHub/CE_Masters/Mobile_Systems/casa0015-mobile-assessment/traveler/build/app/intermediates/cxx/Debug/2g3o3o3t/obj/x86_64
