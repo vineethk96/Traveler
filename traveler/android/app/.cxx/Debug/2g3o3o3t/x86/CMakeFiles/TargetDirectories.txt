@@ -1,2 +1,0 @@
-/home/vineeth/GitHub/CE_Masters/Mobile_Systems/casa0015-mobile-assessment/traveler/android/app/.cxx/Debug/2g3o3o3t/x86/CMakeFiles/edit_cache.dir
-/home/vineeth/GitHub/CE_Masters/Mobile_Systems/casa0015-mobile-assessment/traveler/android/app/.cxx/Debug/2g3o3o3t/x86/CMakeFiles/rebuild_cache.dir
