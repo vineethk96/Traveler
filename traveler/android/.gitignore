@@ -5,6 +5,8 @@ gradle-wrapper.jar
 /gradlew.bat
 /local.properties
 GeneratedPluginRegistrant.java
+
+# Built application files
 /app/.cxx/
 
 # Remember to never publicly share your keystore.
