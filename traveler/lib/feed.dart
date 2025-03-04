@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'add_place.dart';
 
 class FeedPage extends StatelessWidget {
   const FeedPage({super.key});

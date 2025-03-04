@@ -33,7 +33,7 @@ class AppRoot extends StatelessWidget {
 
         // TODO: Do we need the /feed and /login routes here?
 
-        switch (settings.name) {  // settings contains information about the route
+        switch (settings.name) {  // Define all the routing in a single place
           case '/': // Dynamically switch between Feed and Login
             return MaterialPageRoute(
               builder: (context) => isLoggedIn ? const FeedPage() : const LoginSelectPage(),
