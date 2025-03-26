@@ -1,11 +1,24 @@
+// Import packages
 import 'package:flutter/material.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+// Import all the pages
+import 'app_state.dart';
 import 'not_found.dart';
 import 'login_select.dart';
 import 'feed.dart';
 import 'add_place.dart';
 
 void main() {
-  runApp(const AppRoot());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(ChangeNotifierProvider(
+    create:(context) => ApplicationState(),
+    builder: ((context,child) => const AppRoot()),
+  ));
+  //  const AppRoot());
 }
 
 class AppRoot extends StatelessWidget {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "999560377871",
+    "project_id": "traveler-6ea4c",
+    "storage_bucket": "traveler-6ea4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999560377871:android:1752f49da71da2f375157a",
+        "android_client_info": {
+          "package_name": "com.example.traveler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHylfBQv7DnWyIA6MTtJ8ahl9oEFuBB4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
