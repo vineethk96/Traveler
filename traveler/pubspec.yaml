@@ -36,6 +36,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.5
+  firebase_core: ^3.12.1    # Common Code Dependency for Firebase Integration
+  firebase_auth: ^5.5.1     # Firebase Authentication
+  cloud_firestore: ^5.6.5   # Firebase Data Storage
+  provider: ^6.1.2          # Wrapper for InheritedWidget to make state management easier
+  firebase_ui_auth: ^1.16.1 # Firebase UI for Authentication, includes widgets and utilis for sign-in
+  go_router: ^14.8.1        # Router for Flutter                                                            // TODO: is this even necessary? Maybe there is better way of doing this?
 
 dev_dependencies:
   flutter_test:
