@@ -1,33 +1,40 @@
 // Import packages
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:traveler/firebase_options.dart';
 
 // Import all the pages
 import 'app_state.dart';
 import 'not_found.dart';
-import 'login_select.dart';
+import 'auth_gate.dart';
+// import 'login_select.dart';
 import 'feed.dart';
 import 'add_place.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();  // Ensure that the Flutter engine is initialized before initializing Firebase.
+
+  await Firebase.initializeApp(               // Initialize Firebase and Imports Firebase Keys
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(ChangeNotifierProvider(
     create:(context) => ApplicationState(),
-    builder: ((context,child) => const AppRoot()),
+    builder: ((context,child) => AppRoot()),
   ));
   //  const AppRoot());
 }
 
 class AppRoot extends StatelessWidget {
-  const AppRoot({super.key}); // compare old and new widgets when rebuilding, which helps with performance.
+  AppRoot({super.key}); // compare old and new widgets when rebuilding, which helps with performance.
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Traveler',
       themeMode: ThemeMode.system,
       // Define Global Theme
@@ -38,35 +45,28 @@ class AppRoot extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      initialRoute: '/', // App Starts Here
-      onGenerateRoute: (settings) {
-
-        // Simulate User Authentication
-        bool isLoggedIn = true;  // TODO: Swap with Firebase User Auth
-
-        // TODO: Do we need the /feed and /login routes here?
-
-        switch (settings.name) {  // Define all the routing in a single place
-          case '/': // Dynamically switch between Feed and Login
-            return MaterialPageRoute(
-              builder: (context) => isLoggedIn ? const FeedPage() : const LoginSelectPage(),
-            );
-          case '/feed': // Go to Feed Page
-            return MaterialPageRoute(
-              builder: (context) => const FeedPage(),
-            );
-          case '/login': // Go to Login Page
-            return MaterialPageRoute(
-              builder: (context) => const LoginSelectPage(),
-            );
-          case '/add_place': // Go to Add Place Page
-            return MaterialPageRoute(
-              builder: (context) => const AddPlacePage(),
-            );
-          default:
-            return MaterialPageRoute(builder: (context) => const NotFoundPage());
-        }
-      },
+      routerConfig: _router,
     );
   }
-}
+
+  // Define the GoRouter
+  final GoRouter _router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const AuthGate(),
+      ),
+      GoRoute(
+        path: '/feed',
+        builder: (context, state) => const FeedPage(),
+      ),
+      GoRoute(
+        path: '/addPlace',
+        builder: (context, state) => const AddPlacePage(),
+      ),
+      
+    ],
+  );
+
+} // AppRoot
