@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:traveler/secure_storage_service.dart';
 
 /// AddPlacePage
 /// 
@@ -115,4 +119,35 @@ class LocationSearch extends StatefulWidget {
 
   @override
   _LocationSearchState createState() => _LocationSearchState();
+}
+
+class _LocationSearchState extends State<LocationSearch> {
+  final TextEditingController _controller = TextEditingController();
+
+  Future<List<String>> _getSuggestions(String query) async {
+    final response = await http.get(
+      Uri.https('maps.googleapis.com', '/maps/api/place/autocomplete/json', {
+        'input': query,
+        'key': await SecureStorageService.getApiKey(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<String> suggestions = [];
+      final data = json.decode(response.body);
+      for (final prediction in data['predictions']) {
+        suggestions.add(prediction['description']);
+      }
+      return suggestions;
+    } else {
+      throw Exception('Failed to load suggestions');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+
+    );
+  }
 }

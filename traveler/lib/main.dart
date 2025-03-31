@@ -1,28 +1,52 @@
 // Import packages
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:traveler/firebase_options.dart';
 import 'package:traveler/layout.dart';
 import 'package:traveler/map.dart';
+import 'package:traveler/secure_storage_service.dart';
 
 // Import all the pages
 import 'transitions.dart';
 import 'app_state.dart';
 import 'not_found.dart';
 import 'auth_gate.dart';
-// import 'login_select.dart';
 import 'feed.dart';
 import 'add_place.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();  // Ensure that the Flutter engine is initialized before initializing Firebase.
+  // Ensure that the Flutter engine is initialized before initializing Firebase.
+  WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(               // Initialize Firebase and Imports Firebase Keys
+  // Initialize Firebase and Imports Firebase Keys
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize Firebase Remote Config
+  final remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(hours: 1),
+    )
+  );
+  await remoteConfig.fetchAndActivate();
+
+  // Pull GMP Key
+  String googleMapsKey = remoteConfig.getString('google_maps_api_key');
+  if(googleMapsKey.isEmpty){
+    throw Exception('Google Maps API Key not found');
+  }
+  else{
+    // Save API Key Securely
+    await SecureStorageService.saveApiKey(googleMapsKey);
+  }
 
   runApp(ChangeNotifierProvider(
     create:(context) => ApplicationState(),
