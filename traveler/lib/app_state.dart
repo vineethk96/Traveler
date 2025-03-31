@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
 
-/**
- * Application State
- * Description: Manages the Login state of the application
- */
+/// Application State
+/// Description: Manages the Login state of the application
 class ApplicationState extends ChangeNotifier {
   ApplicationState(){
     init();

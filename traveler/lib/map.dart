@@ -25,6 +25,7 @@ class _MapPageState extends State<MapPage> {
         target: _center,
         zoom: 12.0,
       ),
+      zoomControlsEnabled: false,
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// AddPlacePage
+/// 
+/// Defines the UI for the page that allows the user to add a place to the map.
 class AddPlacePage extends StatelessWidget {
   const AddPlacePage({super.key});
 
@@ -30,7 +33,7 @@ class AddPlacePage extends StatelessWidget {
 /// 
 /// A segmented button that allows the user to choose between
 /// auto-detecting their location or manually entering it.
-enum AddMethod { auto, manual }
+enum AddMethod { search, gpsPin }
 
 class AddPlaceButton extends StatefulWidget {
   const AddPlaceButton({super.key});
@@ -40,19 +43,19 @@ class AddPlaceButton extends StatefulWidget {
 }
 
 class _AddPlaceButtonState extends State<AddPlaceButton>{
-  AddMethod method = AddMethod.auto;
+  AddMethod method = AddMethod.search;
 
   @override
   Widget build(BuildContext context){
     return SegmentedButton<AddMethod>(
       segments: const <ButtonSegment<AddMethod>>[
         ButtonSegment<AddMethod>(
-          value: AddMethod.auto,
-          label: Text('Auto-Detect'),
+          value: AddMethod.search,
+          label: Text('Search'),
         ),
         ButtonSegment<AddMethod>(
-          value: AddMethod.manual,
-          label: Text('Manual'),
+          value: AddMethod.gpsPin,
+          label: Text('Pin'),
         )
       ],
       selected: <AddMethod>{method},
@@ -61,6 +64,55 @@ class _AddPlaceButtonState extends State<AddPlaceButton>{
           method = newSelection.first;
         });
       },
+      showSelectedIcon: false,  // Hide the checkmark icon, and keeps the button width consistent
     );
   }
+}
+
+/// AddPlaceForm
+/// 
+/// A form that allows the user to add a place to the map using search.
+Widget _searchForm(){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Search Bar
+
+      // Description TextField
+
+      // Has Visited Bool
+
+      // Submit Button
+
+    ],
+  );
+}
+
+/// AddPlaceForm
+/// 
+/// A form that allows the user to add a place to the map using GPS.
+Widget _gpsPinForm(){
+return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Name TextField
+
+      // Description TextField
+
+      // Has Visited Bool
+
+      // Add Pin Button
+      
+    ],
+  );
+}
+
+/// Location Search Bar
+/// 
+/// A search bar that allows the user to search for a location.
+class LocationSearch extends StatefulWidget {
+  const LocationSearch({super.key});
+
+  @override
+  _LocationSearchState createState() => _LocationSearchState();
 }
