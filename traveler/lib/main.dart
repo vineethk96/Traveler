@@ -5,8 +5,11 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:traveler/firebase_options.dart';
+import 'package:traveler/layout.dart';
+import 'package:traveler/map.dart';
 
 // Import all the pages
+import 'transitions.dart';
 import 'app_state.dart';
 import 'not_found.dart';
 import 'auth_gate.dart';
@@ -25,7 +28,6 @@ void main() async {
     create:(context) => ApplicationState(),
     builder: ((context,child) => AppRoot()),
   ));
-  //  const AppRoot());
 }
 
 class AppRoot extends StatelessWidget {
@@ -59,13 +61,42 @@ class AppRoot extends StatelessWidget {
       ),
       GoRoute(
         path: '/feed',
-        builder: (context, state) => const FeedPage(),
+        builder: (context, state) => MainLayout(
+          body:const FeedPage(),
+          initialIndex: 0,
+        ),
+      ),
+      GoRoute(
+        path: '/places',
+        builder: (context, state) => MainLayout(
+          body:const FeedPage(),
+          initialIndex: 1,
+        ), // TODO: REPLACE
+      ),
+      GoRoute(
+        path: '/map',
+        builder: (context, state) => MainLayout(
+          body: MapPage(),
+          initialIndex: 2,
+        ),
+      ),
+      GoRoute(
+        path: '/friends',
+        builder: (context, state) => MainLayout(
+          body:const FeedPage(),
+          initialIndex: 3,
+        ), // TODO: REPLACE
       ),
       GoRoute(
         path: '/addPlace',
-        builder: (context, state) => const AddPlacePage(),
+        pageBuilder: (context, state){
+          final buttonPosition = state.extra as Offset? ?? Offset.zero; // Get the button position from the extra data, and default to 0 if it doesn't exsist
+          return addNewPlaceTransition(
+            const AddPlacePage(), 
+            buttonPosition
+          );
+        },
       ),
-      
     ],
   );
 

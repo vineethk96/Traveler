@@ -11,8 +11,56 @@ class AddPlacePage extends StatelessWidget {
         title: const Text('Add Place'),
       ),
       body: Center(
-        child: Text('Welcome to the Add Place Page!'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Spacer(),
+            AddPlaceButton(),
+            Spacer(),
+            Text('Welcome to the Add Place Page!'),
+          ],
+        )
       ),
+    );
+  }
+}
+
+
+/// AddPlaceButton
+/// 
+/// A segmented button that allows the user to choose between
+/// auto-detecting their location or manually entering it.
+enum AddMethod { auto, manual }
+
+class AddPlaceButton extends StatefulWidget {
+  const AddPlaceButton({super.key});
+
+  @override
+  State<AddPlaceButton> createState() => _AddPlaceButtonState();
+}
+
+class _AddPlaceButtonState extends State<AddPlaceButton>{
+  AddMethod method = AddMethod.auto;
+
+  @override
+  Widget build(BuildContext context){
+    return SegmentedButton<AddMethod>(
+      segments: const <ButtonSegment<AddMethod>>[
+        ButtonSegment<AddMethod>(
+          value: AddMethod.auto,
+          label: Text('Auto-Detect'),
+        ),
+        ButtonSegment<AddMethod>(
+          value: AddMethod.manual,
+          label: Text('Manual'),
+        )
+      ],
+      selected: <AddMethod>{method},
+      onSelectionChanged: (Set<AddMethod> newSelection){
+        setState(() {
+          method = newSelection.first;
+        });
+      },
     );
   }
 }
