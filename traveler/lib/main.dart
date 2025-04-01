@@ -106,7 +106,7 @@ class AppRoot extends StatelessWidget {
         routes: [
           GoRoute(
             path: '/feed',
-            builder: (context, state) => const Center(child: Text('Feed Page')),
+            builder: (context, state) => const Center(child: FeedPage()),
           ),
           GoRoute(
             path: '/places',
@@ -114,7 +114,7 @@ class AppRoot extends StatelessWidget {
           ),
           GoRoute(
             path: '/map',
-            builder: (context, state) => const Center(child: Text('Map Page')),
+            builder: (context, state) => const Center(child: MapPage()),
           ),
           GoRoute(
             path: '/friends',

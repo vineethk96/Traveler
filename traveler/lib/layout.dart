@@ -37,6 +37,8 @@ class MainLayout extends StatelessWidget {
             case 3: context.go('/friends'); break;
           }
         },
+        unselectedItemColor: Theme.of(context).colorScheme.primary,
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
       ),
 
       body: child,  // Use the child widget from the go_router
