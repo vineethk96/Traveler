@@ -50,6 +50,7 @@ dependencies:
   firebase_remote_config: ^5.4.3  # Firebase Remote Config
   google_places_flutter: ^2.1.0
   geocoding: ^3.0.0
+  geolocator: ^13.0.4
 
 dev_dependencies:
   flutter_test:
