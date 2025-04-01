@@ -1,153 +1,97 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:traveler/secure_storage_service.dart';
 
-/// AddPlacePage
-/// 
-/// Defines the UI for the page that allows the user to add a place to the map.
-class AddPlacePage extends StatelessWidget {
-  const AddPlacePage({super.key});
-
+class AddPlacePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Add Place'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Spacer(),
-            AddPlaceButton(),
-            Spacer(),
-            Text('Welcome to the Add Place Page!'),
-          ],
-        )
-      ),
-    );
+  _AddPlacePageState createState() => _AddPlacePageState();
+}
+
+class _AddPlacePageState extends State<AddPlacePage>{
+  late GoogleMapController _mapController;
+  LatLng? selectedLocation;                 // Store the selected location
+  String? GMPKey;                           // Google Maps API Key
+  
+  final TextEditingController searchController = TextEditingController();
+
+  /// Fetch API Key
+  Future<String?> _fetchAPIKey() async {
+    return await SecureStorageService.getApiKey();
   }
-}
 
+  /// Update Map Location
+  void _updateMapLocation(String place) async {
 
-/// AddPlaceButton
-/// 
-/// A segmented button that allows the user to choose between
-/// auto-detecting their location or manually entering it.
-enum AddMethod { search, gpsPin }
-
-class AddPlaceButton extends StatefulWidget {
-  const AddPlaceButton({super.key});
-
-  @override
-  State<AddPlaceButton> createState() => _AddPlaceButtonState();
-}
-
-class _AddPlaceButtonState extends State<AddPlaceButton>{
-  AddMethod method = AddMethod.search;
-
-  @override
-  Widget build(BuildContext context){
-    return SegmentedButton<AddMethod>(
-      segments: const <ButtonSegment<AddMethod>>[
-        ButtonSegment<AddMethod>(
-          value: AddMethod.search,
-          label: Text('Search'),
-        ),
-        ButtonSegment<AddMethod>(
-          value: AddMethod.gpsPin,
-          label: Text('Pin'),
-        )
-      ],
-      selected: <AddMethod>{method},
-      onSelectionChanged: (Set<AddMethod> newSelection){
+    try{
+      List<Location> locations = await locationFromAddress(place);
+      if(locations.isNotEmpty){
         setState(() {
-          method = newSelection.first;
+          selectedLocation = LatLng(locations.first.latitude, locations.first.longitude);
         });
-      },
-      showSelectedIcon: false,  // Hide the checkmark icon, and keeps the button width consistent
-    );
-  }
-}
-
-/// AddPlaceForm
-/// 
-/// A form that allows the user to add a place to the map using search.
-Widget _searchForm(){
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Search Bar
-
-      // Description TextField
-
-      // Has Visited Bool
-
-      // Submit Button
-
-    ],
-  );
-}
-
-/// AddPlaceForm
-/// 
-/// A form that allows the user to add a place to the map using GPS.
-Widget _gpsPinForm(){
-return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Name TextField
-
-      // Description TextField
-
-      // Has Visited Bool
-
-      // Add Pin Button
-      
-    ],
-  );
-}
-
-/// Location Search Bar
-/// 
-/// A search bar that allows the user to search for a location.
-class LocationSearch extends StatefulWidget {
-  const LocationSearch({super.key});
-
-  @override
-  _LocationSearchState createState() => _LocationSearchState();
-}
-
-class _LocationSearchState extends State<LocationSearch> {
-  final TextEditingController _controller = TextEditingController();
-
-  Future<List<String>> _getSuggestions(String query) async {
-    final response = await http.get(
-      Uri.https('maps.googleapis.com', '/maps/api/place/autocomplete/json', {
-        'input': query,
-        'key': await SecureStorageService.getApiKey(),
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final List<String> suggestions = [];
-      final data = json.decode(response.body);
-      for (final prediction in data['predictions']) {
-        suggestions.add(prediction['description']);
+        _mapController.animateCamera(CameraUpdate.newLatLng(selectedLocation!));
       }
-      return suggestions;
-    } else {
-      throw Exception('Failed to load suggestions');
+    } catch(e){
+      print("Error finding location: $e");  // TODO: Handle error differently
     }
   }
 
+  /// Build Widget
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Add New Place")),
+      body: FutureBuilder<String?>(
+        future: _fetchAPIKey(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator());  // Loading Data
+          }
+          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text("Error fetching API key"));
+          }
 
+          final GMPKey = snapshot.data!; // Use fetched API key
+
+          return Column(
+            children: [
+              // Search Bar
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: GooglePlaceAutoCompleteTextField(
+                  textEditingController: searchController,
+                  googleAPIKey: GMPKey,
+                  inputDecoration: InputDecoration(
+                    hintText: "Search for a place",
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  debounceTime: 500,  // Debounce time in milliseconds
+                  isLatLngRequired: false,
+                  getPlaceDetailWithLatLng: (place) {
+                    _updateMapLocation(place.description!);
+                  },
+                )
+              ),
+
+              // Mini Map
+              Expanded(
+                child: selectedLocation == null ? Center(child: Text("No location selected")) : GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                      target: selectedLocation!,
+                      zoom: 15
+                    ),
+                  onMapCreated: (controller) => _mapController = controller,
+                  markers: {
+                    Marker(markerId: MarkerId("selected"), position: selectedLocation!)
+                  },
+                )
+              )
+            ]
+          );
+        }
+      )
     );
   }
 }

@@ -23,6 +23,9 @@ void main() async {
   // Ensure that the Flutter engine is initialized before initializing Firebase.
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load API Key to the Android Manifest
+  await ApiKeyLoader.loadApiKey();
+
   // Initialize Firebase and Imports Firebase Keys
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -79,48 +82,46 @@ class AppRoot extends StatelessWidget {
   final GoRouter _router = GoRouter(
     initialLocation: '/',
     routes: [
+      // Auth Route
       GoRoute(
         path: '/',
         builder: (context, state) => const AuthGate(),
       ),
-      GoRoute(
-        path: '/feed',
-        builder: (context, state) => MainLayout(
-          body:const FeedPage(),
-          initialIndex: 0,
-        ),
-      ),
-      GoRoute(
-        path: '/places',
-        builder: (context, state) => MainLayout(
-          body:const FeedPage(),
-          initialIndex: 1,
-        ), // TODO: REPLACE
-      ),
-      GoRoute(
-        path: '/map',
-        builder: (context, state) => MainLayout(
-          body: MapPage(),
-          initialIndex: 2,
-        ),
-      ),
-      GoRoute(
-        path: '/friends',
-        builder: (context, state) => MainLayout(
-          body:const FeedPage(),
-          initialIndex: 3,
-        ), // TODO: REPLACE
-      ),
+      // Add Place FAB Route
       GoRoute(
         path: '/addPlace',
         pageBuilder: (context, state){
           final buttonPosition = state.extra as Offset? ?? Offset.zero; // Get the button position from the extra data, and default to 0 if it doesn't exsist
           return addNewPlaceTransition(
-            const AddPlacePage(), 
+            AddPlacePage(), 
             buttonPosition
           );
         },
       ),
+      // Bottom Nav Bar Routes
+      ShellRoute(
+        builder: (context, state, child){
+          return MainLayout(child: child);  // Persist Scaffold, swap Body
+        },
+        routes: [
+          GoRoute(
+            path: '/feed',
+            builder: (context, state) => const Center(child: Text('Feed Page')),
+          ),
+          GoRoute(
+            path: '/places',
+            builder: (context, state) => const Center(child: Text('Places Page')),
+          ),
+          GoRoute(
+            path: '/map',
+            builder: (context, state) => const Center(child: Text('Map Page')),
+          ),
+          GoRoute(
+            path: '/friends',
+            builder: (context, state) => const Center(child: Text('Friends Page')),
+          ),
+        ]
+      )
     ],
   );
 

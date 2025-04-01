@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:traveler/layout.dart';
 
 import 'feed.dart';
@@ -38,7 +39,12 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        return MainLayout(body:const FeedPage());
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go('/feed');
+        });
+
+        return const SizedBox();
+        // return MainLayout(body:const FeedPage());
       },
     );
   }
