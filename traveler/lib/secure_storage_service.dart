@@ -1,12 +1,17 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
 
 class SecureStorageService {
   static final _storage = FlutterSecureStorage();
 
   // Store API Key
-  static Future<void> saveApiKey(String apiKey) async {
-    await _storage.write(key: "google_maps_api_key", value: apiKey);
+  static Future<void> saveApiKey() async {
+    // Pull Value from .env File
+    await dotenv.load(fileName: ".env");
+
+    // Save Value in Secure Storage
+    await _storage.write(key: "google_maps_api_key", value: dotenv.env['MAPS_API_KEY']);
   }
 
   // Retrieve API Key
@@ -17,17 +22,5 @@ class SecureStorageService {
   // Delete API Key
   static Future<void> deleteApiKey() async {
     await _storage.delete(key: "google_maps_api_key");
-  }
-}
-
-class ApiKeyLoader {
-  static const _storage = FlutterSecureStorage();
-
-  static Future<void> loadApiKey() async {
-    String? apiKey = await _storage.read(key: "google_maps_api_key");
-
-    if(apiKey != null && apiKey.isNotEmpty){
-      await Process.run('sh', ['-c', 'export MAPS_API_KEY=$apiKey']);
-    }
   }
 }

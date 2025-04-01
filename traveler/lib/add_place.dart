@@ -4,174 +4,155 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-// import 'package:traveler/locations.dart';
 import 'package:traveler/secure_storage_service.dart';
 
 class AddPlacePage extends StatefulWidget {
+  const AddPlacePage({super.key});
+
   @override
-  _AddPlacePageState createState() => _AddPlacePageState();
+  State<AddPlacePage> createState() => _AddPlacePage();
 }
 
-class _AddPlacePageState extends State<AddPlacePage>{
-  GoogleMapController? _mapController;
-  LatLng? selectedLocation;                 // Store the selected location
-  String? GMPKey;                           // Google Maps API Key
-  
-  final TextEditingController searchController = TextEditingController();
+class _AddPlacePage extends State<AddPlacePage>{
 
-  /// Fetch API Key
-  Future<String?> _fetchAPIKey() async {
+  late GoogleMapController _mapController;
+  final TextEditingController _textController = TextEditingController();
+  late LatLng newLocation = LatLng(45.521563, -122.677433); // Default Location
+  late final GMPKey;
+
+  // Pull the API Key
+  Future<String?> fetchAPIKey() async {
     return await SecureStorageService.getApiKey();
   }
 
-  /// Get Users Current Location
-  Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if Location Services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if(!serviceEnabled){
-      print("Error: Location Services Disabled");  // TODO: Add a default value that still allows users to add places without GPS
-      return;
-    }
-
-    // Check Location permissions
-    permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied){
-      permission = await Geolocator.requestPermission();
-      if(permission == LocationPermission.denied){  // TODO: do we need to check twice? This seems silly?
-        print("Error: Location Permissions were denied twice?");
-        return;
-      }
-    }
-
-    if(permission == LocationPermission.deniedForever){
-      print("Error: Permissions were denied forever?");
-      return;
-    }
-
-    // Set Location Settings
-    final LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 100,
-    );
-
-    // Get Current Position
-    Position position = await Geolocator.getCurrentPosition(
-      locationSettings: locationSettings,
-    );
-
-    setState(() {
-      selectedLocation = LatLng(position.latitude, position.longitude);
-    });
-
-    // Move the camera to the selected location
-    if (_mapController != null) {
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(selectedLocation!, 15),
-      );
-    }
+  // Save the Controller once the Map has been Created
+  void _onMapCreated(GoogleMapController mapController){
+    _mapController = mapController;
   }
 
-  /// Update map location when a new place is selected
-  void _updateMapLocation(double lat, double lng) {
+  // Update the Map Location upon every search
+  void updateMapLocation(double? lat, double? lng){
+
+    if (lat == null || lng == null) {
+      print("Error: Received null latitude/longitude");
+      return; // Prevents errors from null values
+    }
+
     setState(() {
-      selectedLocation = LatLng(lat, lng);
+      newLocation = LatLng(lat, lng);
     });
 
-    // Move the camera to the selected location
+    // Ensure mapController is initialized before calling animateCamera
     if (_mapController != null) {
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(selectedLocation!, 15),
-      );
+      _mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
+    } else {
+      print("Error: MapController is not initialized yet.");
     }
   }
 
   @override
-  void initState(){
-    super.initState();
-    // Fetch API Key when Widget Initializes
-    _fetchAPIKey();
-    // Fetch User Location when Page Loads
-    _getCurrentLocation();
-  }
+  Widget build(BuildContext context){
 
-  /// Build Widget
-  @override
-  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: fetchAPIKey(),
+      builder: (context, snapshot){
+        if(snapshot.connectionState == ConnectionState.waiting){
+          // Have a loading screen while we wait for the API key
+          return Scaffold(
+            appBar: AppBar(title: Text("Add Place...")),
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        
+        // Error occured when trying to read the data
+        if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty){
+          return Scaffold(
+            appBar: AppBar(title: Text("Add Place: Error")),
+            body: Center(child: Text("Failed to Fetch API Key.")),
+          );
+        }
 
-    // Check for GMP Key
-    if(GMPKey == null){
-      return Scaffold(
-        appBar: AppBar(title: Text("Add New Place")),
-        body: Center(child: CircularProgressIndicator()), // Stick to loading when no API key has been loaded
-      );
-    }
+        return Scaffold(
 
-    // If we have the GMP Key, we can populate the page
-    return Scaffold(
-      appBar: AppBar(title: Text("Add New Place")),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: GooglePlaceAutoCompleteTextField(
-              textEditingController: searchController,
-              googleAPIKey: GMPKey!,
-              inputDecoration: InputDecoration(
-                hintText: "Search for a place",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
-              ),
-              debounceTime: 500,  // Debounce time in milliseconds
-              isLatLngRequired: true,
-              getPlaceDetailWithLatLng: (Prediction prediction) {
-                // Handle the place details, including latitude and longitude
-                print("Selected place: ${prediction.description}");
-                print("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
+          appBar: AppBar(title: const Text('Add Place')),
 
-                _updateMapLocation(prediction.lat! as double, prediction.lng! as double);
-              },
-              itemClick: (Prediction prediction){
-                searchController.text = prediction.description ?? "";
-                searchController.selection = TextSelection.fromPosition(
-                  TextPosition(
-                    offset: prediction.description?.length ?? 0
+          body: Padding(
+
+            padding: EdgeInsets.all(16.0),  // Adds Space Around the child object
+
+            child: SingleChildScrollView(
+
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,  // Centers all the children
+
+                children: [
+                  // Autocomplete Search Box
+                  GooglePlaceAutoCompleteTextField(
+                    textEditingController: _textController,
+                    googleAPIKey: snapshot.data!,           // The key value from the future function
+                    inputDecoration: InputDecoration(
+                      hintText: "Search for a place",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    debounceTime: 500,
+                    isLatLngRequired: true,
+                    getPlaceDetailWithLatLng: (Prediction prediction){
+                      print("Selected place: ${prediction.description}");
+                      print("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
+
+                      // updateMapLocation(prediction.lat as double, prediction.lng as double);
+                      if (prediction.lat != null && prediction.lng != null) {
+                        updateMapLocation(prediction.lat as double?, prediction.lng as double?);
+                      } else {
+                        print("Error with lat long");
+                      }
+                    },
+                    itemClick: (Prediction prediction){
+                      _textController.text = prediction.description ?? "";
+                      _textController.selection = TextSelection.fromPosition(
+                        TextPosition(
+                          offset: prediction.description?.length ?? 0,
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            )
-          ),
+                  SizedBox(height: 16),
 
-          // Mini Map
-          Expanded(
-            child: selectedLocation == null
-              ? Center(child: Text("Fetching current location..."))
-              : GoogleMap(
-                initialCameraPosition: CameraPosition(
-                    target: selectedLocation!,
-                    zoom: 15
+                  // Mini Google Map
+                  SizedBox(
+                    height: 300,
+                    child: GoogleMap(
+                        onMapCreated: _onMapCreated,
+                        zoomControlsEnabled: false,
+                        // Maybe define a marker for the new location?
+                        initialCameraPosition: CameraPosition(
+                          target: newLocation,
+                          zoom: 15
+                        ),
+                        markers: {
+                          Marker(markerId: MarkerId("selected"), position: newLocation!)
+                        },
+                      ),
                   ),
-              onMapCreated: (GoogleMapController controller){
-                setState((){
-                  _mapController = controller;
-                });
+                  SizedBox(height: 16),
 
-                if (selectedLocation != null) {
-                  _mapController!.animateCamera(
-                    CameraUpdate.newLatLngZoom(selectedLocation!, 15),
-                  );
-                }
-              },
-              markers: {
-                Marker(markerId: MarkerId("selected"), position: selectedLocation!)
-              },
-            )
+                  // Description Textbox
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Description",
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                ],
+              )
+            ),
           )
-        ]
-      )
+        );
+      }
     );
   }
 }

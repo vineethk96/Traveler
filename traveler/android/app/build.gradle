@@ -34,7 +34,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         // Pull Key from Flutter Secure Storage
-        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "DEFAULT_VALUE"
+        manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") ?: ""
     }
 
     buildTypes {
