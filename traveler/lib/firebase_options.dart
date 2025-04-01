@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'traveler-6ea4c.firebasestorage.app',
     measurementId: 'G-S53WJG63XF',
   );
+
 }

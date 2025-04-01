@@ -1,33 +1,69 @@
 // Import packages
-import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:traveler/firebase_options.dart';
+import 'package:traveler/layout.dart';
+import 'package:traveler/map.dart';
+import 'package:traveler/secure_storage_service.dart';
 
 // Import all the pages
+import 'transitions.dart';
 import 'app_state.dart';
 import 'not_found.dart';
-import 'login_select.dart';
+import 'auth_gate.dart';
 import 'feed.dart';
 import 'add_place.dart';
 
-void main() {
+void main() async {
+  // Ensure that the Flutter engine is initialized before initializing Firebase.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load API Key to the Android Manifest
+  await ApiKeyLoader.loadApiKey();
+
+  // Initialize Firebase and Imports Firebase Keys
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize Firebase Remote Config
+  final remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(hours: 1),
+    )
+  );
+  await remoteConfig.fetchAndActivate();
+
+  // Pull GMP Key
+  String googleMapsKey = remoteConfig.getString('google_maps_api_key');
+  if(googleMapsKey.isEmpty){
+    throw Exception('Google Maps API Key not found');
+  }
+  else{
+    // Save API Key Securely
+    await SecureStorageService.saveApiKey(googleMapsKey);
+  }
 
   runApp(ChangeNotifierProvider(
     create:(context) => ApplicationState(),
-    builder: ((context,child) => const AppRoot()),
+    builder: ((context,child) => AppRoot()),
   ));
-  //  const AppRoot());
 }
 
 class AppRoot extends StatelessWidget {
-  const AppRoot({super.key}); // compare old and new widgets when rebuilding, which helps with performance.
+  AppRoot({super.key}); // compare old and new widgets when rebuilding, which helps with performance.
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Traveler',
       themeMode: ThemeMode.system,
       // Define Global Theme
@@ -38,35 +74,55 @@ class AppRoot extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      initialRoute: '/', // App Starts Here
-      onGenerateRoute: (settings) {
-
-        // Simulate User Authentication
-        bool isLoggedIn = true;  // TODO: Swap with Firebase User Auth
-
-        // TODO: Do we need the /feed and /login routes here?
-
-        switch (settings.name) {  // Define all the routing in a single place
-          case '/': // Dynamically switch between Feed and Login
-            return MaterialPageRoute(
-              builder: (context) => isLoggedIn ? const FeedPage() : const LoginSelectPage(),
-            );
-          case '/feed': // Go to Feed Page
-            return MaterialPageRoute(
-              builder: (context) => const FeedPage(),
-            );
-          case '/login': // Go to Login Page
-            return MaterialPageRoute(
-              builder: (context) => const LoginSelectPage(),
-            );
-          case '/add_place': // Go to Add Place Page
-            return MaterialPageRoute(
-              builder: (context) => const AddPlacePage(),
-            );
-          default:
-            return MaterialPageRoute(builder: (context) => const NotFoundPage());
-        }
-      },
+      routerConfig: _router,
     );
   }
-}
+
+  // Define the GoRouter
+  final GoRouter _router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      // Auth Route
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const AuthGate(),
+      ),
+      // Add Place FAB Route
+      GoRoute(
+        path: '/addPlace',
+        pageBuilder: (context, state){
+          final buttonPosition = state.extra as Offset? ?? Offset.zero; // Get the button position from the extra data, and default to 0 if it doesn't exsist
+          return addNewPlaceTransition(
+            AddPlacePage(), 
+            buttonPosition
+          );
+        },
+      ),
+      // Bottom Nav Bar Routes
+      ShellRoute(
+        builder: (context, state, child){
+          return MainLayout(child: child);  // Persist Scaffold, swap Body
+        },
+        routes: [
+          GoRoute(
+            path: '/feed',
+            builder: (context, state) => const Center(child: FeedPage()),
+          ),
+          GoRoute(
+            path: '/places',
+            builder: (context, state) => const Center(child: Text('Places Page')),
+          ),
+          GoRoute(
+            path: '/map',
+            builder: (context, state) => const Center(child: MapPage()),
+          ),
+          GoRoute(
+            path: '/friends',
+            builder: (context, state) => const Center(child: Text('Friends Page')),
+          ),
+        ]
+      )
+    ],
+  );
+
+} // AppRoot

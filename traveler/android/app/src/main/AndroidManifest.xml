@@ -3,6 +3,12 @@
         android:label="Traveler"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+        <!-- TODO: Add your Google Maps API key here -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                android:value="${MAPS_API_KEY}"
+        />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
