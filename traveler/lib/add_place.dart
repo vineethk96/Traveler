@@ -31,24 +31,21 @@ class _AddPlacePage extends State<AddPlacePage>{
 
     setState(() {
       newLocation = coordinates;
-    });
-
-    if(_mapController != null){
-      print("animating camera");
-      _mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: newLocation,
-            zoom: 16,
+      if(_mapController != null){
+        print("animating camera");
+        _mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: newLocation,
+              zoom: 16,
+            ),
           ),
-        ),
-      );
-    }
-    else{
-      print("MAP CONTROLLER IS NOT READY");
-    }
-    
-    
+        );
+      }
+      else{
+        print("MAP CONTROLLER IS NOT READY");
+      }
+    });
   }
 
   // Save the Controller once the Map has been Created
@@ -123,6 +120,17 @@ class _AddPlacePage extends State<AddPlacePage>{
                     },
                   ),
                   SizedBox(height: 16),
+
+                  /*
+                    TODO: When returning to this problem, take a look at this stackoverflow page.
+                    https://stackoverflow.com/questions/48844804/flutter-setstate-not-updating-inner-stateful-widget
+
+                    Currently, the issue is when the user tries to search for a new location, the map is changing, 
+                    however, the tiles do not update.
+                  */
+
+
+
 
                   // Mini Google Map
                   SizedBox(
