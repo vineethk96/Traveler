@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:traveler/secure_storage_service.dart';
 
@@ -18,36 +16,44 @@ class _AddPlacePage extends State<AddPlacePage>{
   late GoogleMapController _mapController;
   final TextEditingController _textController = TextEditingController();
   late LatLng newLocation = LatLng(45.521563, -122.677433); // Default Location
-  late final GMPKey;
+  late String mapID;
 
   // Pull the API Key
   Future<String?> fetchAPIKey() async {
+    mapID = (await SecureStorageService.getMapsID())!;
     return await SecureStorageService.getApiKey();
+  }
+
+  // Update the Map Location upon every search
+  void updateMapLocation(LatLng coordinates){
+
+    print("updating map logic");
+
+    setState(() {
+      newLocation = coordinates;
+    });
+
+    if(_mapController != null){
+      print("animating camera");
+      _mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: newLocation,
+            zoom: 16,
+          ),
+        ),
+      );
+    }
+    else{
+      print("MAP CONTROLLER IS NOT READY");
+    }
+    
+    
   }
 
   // Save the Controller once the Map has been Created
   void _onMapCreated(GoogleMapController mapController){
     _mapController = mapController;
-  }
-
-  // Update the Map Location upon every search
-  void updateMapLocation(double? lat, double? lng){
-
-    if (lat == null || lng == null) {
-      print("Error: Received null latitude/longitude");
-      return; // Prevents errors from null values
-    }
-
-    setState(() {
-      newLocation = LatLng(lat, lng);
-    });
-
-    // Ensure mapController is initialized before calling animateCamera
-    if (_mapController != null) {
-      _mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
-    } else {
-      print("Error: MapController is not initialized yet.");
-    }
   }
 
   @override
@@ -102,13 +108,10 @@ class _AddPlacePage extends State<AddPlacePage>{
                     getPlaceDetailWithLatLng: (Prediction prediction){
                       print("Selected place: ${prediction.description}");
                       print("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
-
-                      // updateMapLocation(prediction.lat as double, prediction.lng as double);
-                      if (prediction.lat != null && prediction.lng != null) {
-                        updateMapLocation(prediction.lat as double?, prediction.lng as double?);
-                      } else {
-                        print("Error with lat long");
-                      }
+                      double lat = double.parse(prediction.lat ?? "0");
+                      double lng = double.parse(prediction.lng ?? "0");
+                      LatLng coordinates = LatLng(lat, lng);
+                      updateMapLocation(coordinates);
                     },
                     itemClick: (Prediction prediction){
                       _textController.text = prediction.description ?? "";
@@ -125,17 +128,19 @@ class _AddPlacePage extends State<AddPlacePage>{
                   SizedBox(
                     height: 300,
                     child: GoogleMap(
-                        onMapCreated: _onMapCreated,
-                        zoomControlsEnabled: false,
-                        // Maybe define a marker for the new location?
-                        initialCameraPosition: CameraPosition(
-                          target: newLocation,
-                          zoom: 15
-                        ),
-                        markers: {
-                          Marker(markerId: MarkerId("selected"), position: newLocation!)
-                        },
+                      // mapId: MapID(mapID),
+                      key: UniqueKey(),
+                      onMapCreated: _onMapCreated,
+                      zoomControlsEnabled: false,
+                      // Maybe define a marker for the new location?
+                      initialCameraPosition: CameraPosition(
+                        target: newLocation,
+                        zoom: 15
                       ),
+                      markers: {
+                        Marker(markerId: MarkerId("selected"), position: newLocation)
+                      },
+                    ),
                   ),
                   SizedBox(height: 16),
 
