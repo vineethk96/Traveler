@@ -10,6 +10,33 @@ plugins {
     id 'com.google.secrets_gradle_plugin' version '0.5'
 }
 
+def getEnvValue(String key) {
+    
+    String value = ""
+    def rootDir = project.projectDir.parentFile.parentFile
+    println("Root Directory: ${rootDir.absolutePath}")
+    def filePath = "${rootDir.absolutePath}/.env"
+    def envFile = new File(filePath)
+
+    if (envFile.exists() && envFile.isFile()) {
+        println(".env file found at: ${envFile.absolutePath}")
+    } else {
+        println("Could not find .env file at: ${filePath}")
+    }
+    
+    //def envFile = rootDir.file(".env")
+    if (envFile.exists()) {
+        envFile.eachLine { line ->
+            if (line.startsWith(key + "=")) {
+                println("Found $key in .env file")
+                value = line.split("=")[1].trim()
+                return value
+            }
+        }
+    }
+    return value
+}
+
 android {
     namespace = "com.example.traveler"
     compileSdk = flutter.compileSdkVersion
@@ -34,7 +61,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         // Pull Key from Flutter Secure Storage
-        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "DEFAULT_VALUE"
+        String apiKey = getEnvValue("MAPS_API_KEY")
+        println("APIKEY: ${apiKey}")
+        manifestPlaceholders["MAPS_API_KEY"] = getEnvValue("MAPS_API_KEY")
+        println("Manifest Placeholders: ${manifestPlaceholders}")
     }
 
     buildTypes {
