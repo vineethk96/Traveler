@@ -15,12 +15,13 @@ class AddPlacePage extends StatefulWidget {
 
 class _AddPlacePage extends State<AddPlacePage>{
 
-  late GoogleMapController _mapController;                          // The controller for the map
-  late String mapID;                                                      // Links to the Custom Map in GMaps
-  late String apiKey;                                                     // The API Key for Google Maps
-  final TextEditingController _textController = TextEditingController();  // The text controller for the search box
-  LatLng searchedLocation = LatLng(45.521563, -122.677433);               // Default Location on the map
-  Set<Marker> _visibleMarkers = {};                                       // The markers that are visible on the map
+  late GoogleMapController _mapController;                                      // The controller for the map
+  late String mapID;                                                            // Links to the Custom Map in GMaps
+  late String apiKey;                                                           // The API Key for Google Maps
+  final TextEditingController _searchController = TextEditingController();      // The text controller for the search box
+  final TextEditingController _descriptionController = TextEditingController(); // The text controller for the description box
+  LatLng searchedLocation = LatLng(45.521563, -122.677433);                     // Default Location on the map
+  Set<Marker> _visibleMarkers = {};                                             // The markers that are visible on the map
 
 
   // Save the Controller once the Map has been Created
@@ -94,7 +95,6 @@ class _AddPlacePage extends State<AddPlacePage>{
           );
         }
 
-        print("***********************************API Key from snapshot: ${snapshot.data}");
         apiKey = snapshot.data!;  // Update the API Key
 
         return Scaffold(
@@ -110,7 +110,7 @@ class _AddPlacePage extends State<AddPlacePage>{
                   padding: const EdgeInsets.all(8.0),
                   child: GooglePlaceAutoCompleteTextField(
 
-                    textEditingController: _textController,
+                    textEditingController: _searchController,
                     googleAPIKey: apiKey,
                     inputDecoration: InputDecoration(
                       hintText: "Search for a place",
@@ -129,8 +129,8 @@ class _AddPlacePage extends State<AddPlacePage>{
                       updateMapLocation();
                     },
                     itemClick: (Prediction prediction){
-                      _textController.text = prediction.description ?? "";
-                      _textController.selection = TextSelection.fromPosition(
+                      _searchController.text = prediction.description ?? "";
+                      _searchController.selection = TextSelection.fromPosition(
                         TextPosition(
                           offset: prediction.description?.length ?? 0,
                         ),
@@ -163,8 +163,17 @@ class _AddPlacePage extends State<AddPlacePage>{
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: _descriptionController,
                     decoration: InputDecoration(hintText: "Description"),
                   )
+                ),
+
+
+                ElevatedButton(
+                  onPressed: (){
+                    // Send API POST Request to save the place
+                  },
+                  child: Text('Save Place'),
                 ),
 
 
@@ -201,7 +210,7 @@ class _AddPlacePage extends State<AddPlacePage>{
           //         // Autocomplete Search Box
           //         GooglePlaceAutoCompleteTextField(
 
-          //           textEditingController: _textController,
+          //           textEditingController: _searchController,
           //           googleAPIKey: snapshot.data!,           // The key value from the future function
           //           inputDecoration: InputDecoration(
           //             hintText: "Search for a place",
@@ -219,8 +228,8 @@ class _AddPlacePage extends State<AddPlacePage>{
           //             //updateMapLocation();
           //           },
           //           itemClick: (Prediction prediction){
-          //             _textController.text = prediction.description ?? "";
-          //             _textController.selection = TextSelection.fromPosition(
+          //             _searchController.text = prediction.description ?? "";
+          //             _searchController.selection = TextSelection.fromPosition(
           //               TextPosition(
           //                 offset: prediction.description?.length ?? 0,
           //               ),
