@@ -25,6 +25,17 @@ class _LoginPageState extends State<LoginPage> {
 
     try{
       await authService.signInEmail(email, password);
+      
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login Successful"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Redirect to feed page
+        context.go('/feed');
+      }
     } catch(e){
 
       if(mounted){

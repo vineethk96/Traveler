@@ -21,7 +21,7 @@ class _SignUpState extends State<SignUp> {
   final _confirmPasswordController = TextEditingController();
 
   // Sign Up Submission
-  Future<bool> signUp() async {
+  void signUp() async {
     final email = _emailController.text;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
@@ -33,19 +33,23 @@ class _SignUpState extends State<SignUp> {
           duration: Duration(seconds: 2),
         ),
       );
-      return false;
+      return;
     }
 
     try{
       await authService.signUpEmail(email, password);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Sign Up Successful"),
-          duration: Duration(seconds: 2),
-        ),
-      );
 
-      return true;
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sign Up Successful"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Redirect to login page
+        context.go('/login');
+      }
+      return;
 
     } catch(e){
       if(mounted){
@@ -60,7 +64,7 @@ class _SignUpState extends State<SignUp> {
       }
     }
 
-    return false;
+    return;
   }
 
   @override
@@ -106,12 +110,7 @@ class _SignUpState extends State<SignUp> {
 
           // Sign Up Button
           ElevatedButton(
-            onPressed: signUp ? () async {
-              final success = await signUp();
-              if (success) {
-                context.go('/feed'); // Redirect to feed page on success
-              }
-            } : null,
+            onPressed: signUp,
             child: const Text('Sign Up'),
           ),
         ],

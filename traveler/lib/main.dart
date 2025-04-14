@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/auth/auth_gate.dart';
 import 'package:traveler/pages/layout.dart';
+import 'package:traveler/pages/login.dart';
 import 'package:traveler/pages/map.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
+import 'package:traveler/pages/signup.dart';
 
 // Import all the pages
 import 'animations/transitions.dart';
@@ -77,6 +79,14 @@ class AppRoot extends StatelessWidget {
             buttonPosition
           );
         },
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const SignUp(),
       ),
       // Bottom Nav Bar Routes
       ShellRoute(

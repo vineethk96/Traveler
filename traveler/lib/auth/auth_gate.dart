@@ -5,6 +5,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/pages/feed.dart';
 import 'package:traveler/pages/login.dart';
@@ -32,15 +33,16 @@ class AuthGate extends StatelessWidget{
         // Check for valid session
         final session = snapshot.hasData ? snapshot.data!.session : null;
 
-        if(session != null){
-          // User is logged in
-          return const FeedPage();  // Is this the right way to move to the feed?
-        } else {
-          // User is not logged in
-          return const LoginPage();
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // Check if session is null
+          if(session == null){
+            context.go('/login');  // Redirect to login page
+          } else {
+            context.go('/feed');  // Redirect to feed page
+          }
+        });
 
-
+        return const SizedBox.shrink();  // Placeholder widget while redirecting
       },
     );
   }

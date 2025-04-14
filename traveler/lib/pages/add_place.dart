@@ -135,8 +135,6 @@ class _AddPlacePage extends State<AddPlacePage>{
                           offset: prediction.description?.length ?? 0,
                         ),
                       );
-
-                      //updateMapLocation();
                     },
                   ),
                 ),
