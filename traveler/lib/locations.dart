@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -93,7 +94,7 @@ Future<Locations> getGoogleOffices() async {
     }
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      log('$e');
     }
   }
 

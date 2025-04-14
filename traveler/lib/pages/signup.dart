@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -54,7 +56,7 @@ class _SignUpState extends State<SignUp> {
     } catch(e){
       if(mounted){
         // Handle error
-        print("Error signing up: $e");
+        log("Error signing up: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error: $e"),

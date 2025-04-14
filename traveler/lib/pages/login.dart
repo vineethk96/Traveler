@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:traveler/auth/auth_service.dart';
@@ -40,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if(mounted){
         // Handle error
-        print("Error signing in: $e");
+        log("Error signing in: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error: $e"),

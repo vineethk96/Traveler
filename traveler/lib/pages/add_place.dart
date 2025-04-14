@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
@@ -37,7 +39,7 @@ class _AddPlacePage extends State<AddPlacePage>{
   Future<String?> fetchAPIKey() async {
     mapID = (await SecureStorageService.getMapsID())!;
     apiKey = (await SecureStorageService.getMapsKey())!;
-    print("API Key: $apiKey");
+    log("API Key: $apiKey");
     return apiKey;
   }
 
@@ -45,7 +47,7 @@ class _AddPlacePage extends State<AddPlacePage>{
   // Update the Map Location upon every search
   void updateMapLocation() async{
 
-    print("updating map logic");
+    log("updating map logic");
 
     await _mapController.animateCamera(
       CameraUpdate.newLatLngZoom(
@@ -120,8 +122,8 @@ class _AddPlacePage extends State<AddPlacePage>{
                     debounceTime: 500,
                     isLatLngRequired: true,
                     getPlaceDetailWithLatLng: (Prediction prediction){
-                      print("Selected place: ${prediction.description}");
-                      print("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
+                      log("Selected place: ${prediction.description}");
+                      log("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
                       double lat = double.parse(prediction.lat ?? "0");
                       double lng = double.parse(prediction.lng ?? "0");
                       searchedLocation = LatLng(lat, lng);
@@ -218,8 +220,8 @@ class _AddPlacePage extends State<AddPlacePage>{
           //           debounceTime: 500,
           //           isLatLngRequired: true,
           //           getPlaceDetailWithLatLng: (Prediction prediction){
-          //             print("Selected place: ${prediction.description}");
-          //             print("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
+          //             log("Selected place: ${prediction.description}");
+          //             log("Latitude: ${prediction.lat}, Longitude: ${prediction.lng}");
           //             double lat = double.parse(prediction.lat ?? "0");
           //             double lng = double.parse(prediction.lng ?? "0");
           //             searchedLocation = LatLng(lat, lng);

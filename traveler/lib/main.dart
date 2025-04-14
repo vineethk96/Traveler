@@ -1,4 +1,6 @@
 // Import packages
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -17,14 +19,14 @@ import 'pages/feed.dart';
 import 'pages/add_place.dart';
 
 void main() async {
-  // Ensure that the Flutter engine is initialized before initializing Firebase.
+  // Ensure that the Flutter engine is initialized before initializing.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Save the API Key in Secure Storage
   await SecureStorageService.loadSecrets();
-  print("Key has been saved?");
+  log("Key has been saved?");
   String? key = await SecureStorageService.getMapsKey();
-  print(key);
+  log(key!);
 
   // Pull in the URL and Key from Secure Storage
   String supabaseKey = await SecureStorageService.getSupabaseKey() ?? '';
