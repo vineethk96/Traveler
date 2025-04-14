@@ -1,40 +1,42 @@
 // Import packages
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:traveler/firebase_options.dart';
-import 'package:traveler/layout.dart';
-import 'package:traveler/map.dart';
-import 'package:traveler/secure_storage_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:traveler/auth/auth_gate.dart';
+import 'package:traveler/pages/layout.dart';
+import 'package:traveler/pages/login.dart';
+import 'package:traveler/pages/map.dart';
+import 'package:traveler/auth/secure_storage_service.dart';
+import 'package:traveler/pages/signup.dart';
 
 // Import all the pages
-import 'transitions.dart';
-import 'app_state.dart';
-import 'not_found.dart';
-import 'auth_gate.dart';
-import 'feed.dart';
-import 'add_place.dart';
+import 'animations/transitions.dart';
+import 'pages/not_found.dart';
+import 'pages/feed.dart';
+import 'pages/add_place.dart';
 
 void main() async {
   // Ensure that the Flutter engine is initialized before initializing Firebase.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Save the API Key in Secure Storage
-  await SecureStorageService.saveApiKey();
+  await SecureStorageService.loadSecrets();
   print("Key has been saved?");
-  String? key = await SecureStorageService.getApiKey();
+  String? key = await SecureStorageService.getMapsKey();
   print(key);
 
-  // Initialize Firebase and Imports Firebase Keys
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  // Pull in the URL and Key from Secure Storage
+  String supabaseKey = await SecureStorageService.getSupabaseKey() ?? '';
+  String supbaseUrl = await SecureStorageService.getSupabaseURL() ?? '';
+
+  // Initialize SupaBase
+  await Supabase.initialize(
+    anonKey: supabaseKey,
+    url: supbaseUrl,
   );
 
-  runApp(ChangeNotifierProvider(
-    create:(context) => ApplicationState(),
-    builder: ((context,child) => AppRoot()),
-  ));
+  runApp(AppRoot());
 }
 
 class AppRoot extends StatelessWidget {
@@ -77,6 +79,14 @@ class AppRoot extends StatelessWidget {
             buttonPosition
           );
         },
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const SignUp(),
       ),
       // Bottom Nav Bar Routes
       ShellRoute(

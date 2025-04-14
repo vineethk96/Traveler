@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-import 'package:traveler/secure_storage_service.dart';
+import 'package:traveler/auth/secure_storage_service.dart';
 
 /// Create a Stateful Widget for the Add Place Page
 class AddPlacePage extends StatefulWidget {
@@ -36,7 +36,7 @@ class _AddPlacePage extends State<AddPlacePage>{
   // Pull the API Key
   Future<String?> fetchAPIKey() async {
     mapID = (await SecureStorageService.getMapsID())!;
-    apiKey = (await SecureStorageService.getApiKey())!;
+    apiKey = (await SecureStorageService.getMapsKey())!;
     print("API Key: $apiKey");
     return apiKey;
   }
@@ -135,8 +135,6 @@ class _AddPlacePage extends State<AddPlacePage>{
                           offset: prediction.description?.length ?? 0,
                         ),
                       );
-
-                      //updateMapLocation();
                     },
                   ),
                 ),
