@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -5,7 +6,6 @@ class AuthService {
 
   // Sign in with email and password
   Future<AuthResponse> signInEmail(String email, String password) async {
-
     return await _supabase.auth.signInWithPassword(
       email: email,
       password: password,
@@ -29,6 +29,15 @@ class AuthService {
   String? getCurrentUserEmail() {
     final session = _supabase.auth.currentSession;
     final user = session?.user;
+    log("email: ${user?.email}");
     return user?.email;
+  }
+
+  // Get current user ID
+  String? getCurrentUserId() {
+    final session = _supabase.auth.currentSession;
+    final user = session?.user;
+    log("userId: ${user?.id}");
+    return user?.id;
   }
 }

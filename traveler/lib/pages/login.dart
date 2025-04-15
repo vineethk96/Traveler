@@ -2,7 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/auth/auth_service.dart';
+import 'package:traveler/auth/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,8 +28,33 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill in all fields"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email format"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    AuthResponse response = await authService.signInEmail(email, password);
+    log("User: $response");
+
     try{
-      await authService.signInEmail(email, password);
+      response = await authService.signInEmail(email, password);
+
+      // Check if the user is authenticated
+      log("User: $response");
       
       if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -35,6 +63,10 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 2),
           ),
         );
+
+        // Set user ID in UserProvider
+        Provider.of<UserProvider>(context, listen: false).setUserId(authService.getCurrentUserId()!);
+
         // Redirect to feed page
         context.go('/feed');
       }
