@@ -6,11 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/auth/auth_gate.dart';
+import 'package:traveler/auth/user_provider.dart';
 import 'package:traveler/pages/layout.dart';
 import 'package:traveler/pages/login.dart';
 import 'package:traveler/pages/map.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/pages/signup.dart';
+import 'package:traveler/services/supabase_api_service.dart';
 
 // Import all the pages
 import 'animations/transitions.dart';
@@ -38,7 +40,15 @@ void main() async {
     url: supbaseUrl,
   );
 
-  runApp(AppRoot());
+  // Initialize the API Service
+  await SupabaseApiService().initApi();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => UserProvider(), // Create a new instance of UserProvider
+      child: AppRoot(),
+    )
+  );
 }
 
 class AppRoot extends StatelessWidget {

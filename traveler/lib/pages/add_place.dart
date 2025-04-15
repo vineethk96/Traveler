@@ -1,10 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'package:provider/provider.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
+import 'package:traveler/auth/user_provider.dart';
+import 'package:traveler/services/supabase_api_service.dart';
 
 /// Create a Stateful Widget for the Add Place Page
 class AddPlacePage extends StatefulWidget {
@@ -24,6 +28,7 @@ class _AddPlacePage extends State<AddPlacePage>{
   final TextEditingController _descriptionController = TextEditingController(); // The text controller for the description box
   LatLng searchedLocation = LatLng(45.521563, -122.677433);                     // Default Location on the map
   Set<Marker> _visibleMarkers = {};                                             // The markers that are visible on the map
+  late String placeId;
 
 
   // Save the Controller once the Map has been Created
@@ -127,6 +132,7 @@ class _AddPlacePage extends State<AddPlacePage>{
                       double lat = double.parse(prediction.lat ?? "0");
                       double lng = double.parse(prediction.lng ?? "0");
                       searchedLocation = LatLng(lat, lng);
+                      placeId = prediction.placeId ?? "";
 
                       updateMapLocation();
                     },
@@ -170,8 +176,37 @@ class _AddPlacePage extends State<AddPlacePage>{
 
 
                 ElevatedButton(
-                  onPressed: (){
+                  onPressed: () async {
                     // Send API POST Request to save the place
+                    try{
+                      await SupabaseApiService().addLocation(
+                        Provider.of<UserProvider>(context, listen: false).getUserId(),
+                        placeId,
+                        _descriptionController.text
+                      );
+
+                      log("Place saved successfully");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Place saved successfully"),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+
+                      // Redirect to the feed page
+                      if(mounted){
+                        context.go('/feed');
+                      }
+
+                    }catch(e){
+                      log("Error saving place: $e");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Error: $e"),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   },
                   child: Text('Save Place'),
                 ),
