@@ -34,6 +34,12 @@ class _MapPageState extends State<MapPage> {
     }catch(e){
       // Handle error
       log('Error initializing map: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Location Services are disabled"),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
