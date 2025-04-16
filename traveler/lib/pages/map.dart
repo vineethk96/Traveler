@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:traveler/services/location_service.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -10,21 +13,50 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   late GoogleMapController _controller;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  LatLng? _initialPosition;
+
+  @override
+  void initState(){
+    super.initState();
+    _initializeMap();
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     _controller = controller;
   }
 
+  Future<void> _initializeMap() async {
+    try{
+      LatLng currentLatLng = await LocationService.getCurrentPosition();
+      setState((){
+        _initialPosition = currentLatLng;
+      });
+    }catch(e){
+      // Handle error
+      log('Error initializing map: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Location Services are disabled"),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 12.0,
-      ),
-      zoomControlsEnabled: false,
+    return Scaffold(
+      body: _initialPosition == null
+          ? const Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: _initialPosition!,
+                zoom: 12.0,
+              ),
+              myLocationEnabled: true,
+              zoomControlsEnabled: false,
+            ),
     );
   }
 }

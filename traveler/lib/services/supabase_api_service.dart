@@ -6,6 +6,9 @@ import 'dart:convert';
 
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/auth/user_provider.dart';
+import 'package:traveler/models/add_place_model.dart';
+import 'package:traveler/models/saved_place_model.dart';
+import 'package:traveler/models/userId_model.dart';
 
 class SupabaseApiService {
 
@@ -36,15 +39,9 @@ class SupabaseApiService {
   }
 
   // POST Req: Add Location
-  Future<http.Response> addLocation(String userId, String gmapsId, String info) async {
+  Future<http.Response> addLocation(AddPlaceModel place) async {
 
     final url = Uri.parse('$supabaseUrl/functions/v1/add-location');
-
-    final Map<String, String> data = {
-      'user_id': userId,
-      'gmaps_id': gmapsId,
-      'info': info,
-    };
 
     final http.Response response;
 
@@ -53,7 +50,7 @@ class SupabaseApiService {
       response = await http.post(
         url,
         headers: defaultHeaders,
-        body: jsonEncode(data),
+        body: jsonEncode(place.toJson()),
       );
 
       // Check the response status code
@@ -76,5 +73,47 @@ class SupabaseApiService {
     }
 
     return response;
+  }
+
+  // POST Req: Get Locations
+  Future<List<SavedLocationModel>> fetchSavedLocations(UserIdModel userId) async{
+    
+    final url = Uri.parse('$supabaseUrl/functions/v1/get-user-locations');
+    log("url: $url");
+
+    final http.Response response;
+
+    log('response was made');
+
+    try{
+      log('Sending request to fetch saved locations');
+      response = await http.post(
+        url,
+        headers: defaultHeaders,
+        body: jsonEncode(userId.toJson()),
+      );
+
+      log('Response: ${response.body}');
+      
+      // Check the response status code
+      if(response.statusCode == 200){
+        log('Fetched Saved Locations');
+
+        final List<dynamic> placeList = jsonDecode(response.body);
+        return placeList
+        .map((json) => SavedLocationModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+      }
+      else{
+        log('Failed to fetch locations: ${response.statusCode}');
+      }
+    }
+    catch(e){
+      log('Error: $e');
+    }
+
+    // Return a Null value because an error has occured
+    return Future.value([]);
   }
 }

@@ -11,6 +11,7 @@ import 'package:traveler/pages/layout.dart';
 import 'package:traveler/pages/login.dart';
 import 'package:traveler/pages/map.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
+import 'package:traveler/pages/places.dart';
 import 'package:traveler/pages/signup.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 
@@ -112,7 +113,7 @@ class AppRoot extends StatelessWidget {
           ),
           GoRoute(
             path: '/places',
-            builder: (context, state) => const Center(child: Text('Places Page')),
+            builder: (context, state) => const Center(child: PlacesPage()),
           ),
           GoRoute(
             path: '/map',

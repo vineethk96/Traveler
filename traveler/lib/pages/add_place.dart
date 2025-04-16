@@ -8,6 +8,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:provider/provider.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/auth/user_provider.dart';
+import 'package:traveler/models/add_place_model.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 
 /// Create a Stateful Widget for the Add Place Page
@@ -177,13 +178,16 @@ class _AddPlacePage extends State<AddPlacePage>{
 
                 ElevatedButton(
                   onPressed: () async {
-                    // Send API POST Request to save the place
+                    // Create the model of the body
+                    final placeModel = AddPlaceModel(
+                      userId: Provider.of<UserProvider>(context, listen: false).getUserId(),
+                      gmapsId: placeId,
+                      info: _descriptionController.text
+                    );
+
+                    // Send the POST Req
                     try{
-                      await SupabaseApiService().addLocation(
-                        Provider.of<UserProvider>(context, listen: false).getUserId(),
-                        placeId,
-                        _descriptionController.text
-                      );
+                      await SupabaseApiService().addLocation(placeModel);
 
                       log("Place saved successfully");
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -66,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Set user ID in UserProvider
         Provider.of<UserProvider>(context, listen: false).setUserId(authService.getCurrentUserId()!);
+        log("User ID: ${authService.getCurrentUserId()}");
 
         // Redirect to feed page
         context.go('/feed');
