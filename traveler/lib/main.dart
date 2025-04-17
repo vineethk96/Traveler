@@ -13,6 +13,7 @@ import 'package:traveler/pages/map.dart';
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/pages/places.dart';
 import 'package:traveler/pages/signup.dart';
+import 'package:traveler/services/background_service.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 
 // Import all the pages
@@ -50,6 +51,7 @@ void main() async {
       child: AppRoot(),
     )
   );
+  BackgroundService.initBackgroundService();
 }
 
 class AppRoot extends StatelessWidget {

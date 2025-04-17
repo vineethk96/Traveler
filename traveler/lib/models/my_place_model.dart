@@ -1,16 +1,16 @@
-class SavedLocationModel {
+class MyPlaceModel {
   final String gmapsId;
   final String info;
   final DateTime createdAt;
 
-  SavedLocationModel({
+  MyPlaceModel({
     required this.gmapsId,
     required this.info,
     required this.createdAt,
   });
 
-  factory SavedLocationModel.fromJson(Map<String, dynamic> json) {
-    return SavedLocationModel(
+  factory MyPlaceModel.fromJson(Map<String, dynamic> json) {
+    return MyPlaceModel(
       gmapsId: json['gmaps_id'],
       info: json['info'],
       createdAt: DateTime.parse(json['created_at']),

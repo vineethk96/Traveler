@@ -2,9 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/auth/user_provider.dart';
 
-import 'package:traveler/models/saved_place_model.dart';
+import 'package:traveler/models/my_place_model.dart';
 import 'package:traveler/models/userId_model.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 
@@ -17,7 +18,7 @@ class PlacesPage extends StatefulWidget {
 
 class _PlacesPageState extends State<PlacesPage> {
 
-  late Future<List<SavedLocationModel>> _locationsFuture;
+  late Future<List<MyPlaceModel>> _locationsFuture;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _PlacesPageState extends State<PlacesPage> {
   Future<void> _initializePlaces() async {
 
     final userId = UserIdModel(
-      userId: Provider.of<UserProvider>(context, listen: false).getUserId()
+      userId: Supabase.instance.client.auth.currentUser?.id ?? ''
     );
 
     log('User Id: ${userId.userId}');
@@ -58,7 +59,7 @@ class _PlacesPageState extends State<PlacesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<SavedLocationModel>>(
+      body: FutureBuilder<List<MyPlaceModel>>(
         future: _locationsFuture,
         builder: (context, snapshot) {
 
