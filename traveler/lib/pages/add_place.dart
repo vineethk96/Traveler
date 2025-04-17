@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:provider/provider.dart';
+
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/auth/user_provider.dart';
 import 'package:traveler/models/add_place_model.dart';
@@ -75,6 +76,26 @@ class _AddPlacePage extends State<AddPlacePage>{
       _visibleMarkers = {newMarker};
     });
     
+  }
+
+
+  // POST the data to the API
+  Future<void> postData() async {
+    // Create the model of the body
+    final placeModel = AddPlaceModel(
+      userId: Provider.of<UserProvider>(context, listen: false).getUserId(),
+      gmapsId: placeId,
+      info: _descriptionController.text,
+      latLng: searchedLocation
+    );
+
+    // Send the POST Req
+    try{
+      await SupabaseApiService().addLocation(placeModel);
+      log("Place saved successfully");
+    }catch(e){
+      log("Error saving place: $e");
+    }
   }
 
 
@@ -182,7 +203,8 @@ class _AddPlacePage extends State<AddPlacePage>{
                     final placeModel = AddPlaceModel(
                       userId: Provider.of<UserProvider>(context, listen: false).getUserId(),
                       gmapsId: placeId,
-                      info: _descriptionController.text
+                      info: _descriptionController.text,
+                      latLng: searchedLocation
                     );
 
                     // Send the POST Req

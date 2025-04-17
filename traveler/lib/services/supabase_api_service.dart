@@ -45,6 +45,8 @@ class SupabaseApiService {
 
     final http.Response response;
 
+    log('body: ${place.toJson()}');
+
     try{
       // Send the POST request
       response = await http.post(
@@ -60,7 +62,7 @@ class SupabaseApiService {
         log('Failed to add location: ${response.statusCode}');
       }
 
-      // log('Response: ${response.body}');
+      log('Response: ${response.body}');
         
     }catch(e){
       log('Error: $e');
