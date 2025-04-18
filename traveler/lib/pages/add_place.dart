@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:traveler/auth/secure_storage_service.dart';
-import 'package:traveler/auth/user_provider.dart';
 import 'package:traveler/models/add_place_model.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 
@@ -76,7 +76,6 @@ class _AddPlacePage extends State<AddPlacePage>{
     });
     
   }
-
 
   @override
   Widget build(BuildContext context){
@@ -180,9 +179,10 @@ class _AddPlacePage extends State<AddPlacePage>{
                   onPressed: () async {
                     // Create the model of the body
                     final placeModel = AddPlaceModel(
-                      userId: Provider.of<UserProvider>(context, listen: false).getUserId(),
+                      userId: Supabase.instance.client.auth.currentUser?.id ?? '',
                       gmapsId: placeId,
-                      info: _descriptionController.text
+                      info: _descriptionController.text,
+                      latLng: searchedLocation
                     );
 
                     // Send the POST Req
