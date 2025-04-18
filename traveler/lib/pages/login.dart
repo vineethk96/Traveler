@@ -2,10 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:traveler/auth/auth_service.dart';
-import 'package:traveler/auth/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -63,10 +61,6 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 2),
           ),
         );
-
-        // Set user ID in UserProvider
-        Provider.of<UserProvider>(context, listen: false).setUserId(authService.getCurrentUserId()!);
-        log("User ID: ${authService.getCurrentUserId()}");
 
         // Redirect to feed page
         context.go('/feed');

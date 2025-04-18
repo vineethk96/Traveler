@@ -1,9 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:traveler/auth/user_provider.dart';
 
 import 'package:traveler/models/my_place_model.dart';
 import 'package:traveler/models/userId_model.dart';
@@ -121,7 +119,7 @@ class _PlacesPageState extends State<PlacesPage> {
                       const SizedBox(height: 8),
 
                       Text(
-                        'Google Maps ID: ${location.gmapsId}',
+                        'Place ID: ${location.placeId}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,

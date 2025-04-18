@@ -5,11 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:traveler/auth/secure_storage_service.dart';
-import 'package:traveler/auth/user_provider.dart';
 import 'package:traveler/models/add_place_model.dart';
 import 'package:traveler/services/supabase_api_service.dart';
 

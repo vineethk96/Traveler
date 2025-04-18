@@ -1,11 +1,8 @@
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:traveler/auth/auth_service.dart';
 import 'dart:convert';
 
 import 'package:traveler/auth/secure_storage_service.dart';
-import 'package:traveler/auth/user_provider.dart';
 import 'package:traveler/models/add_place_model.dart';
 import 'package:traveler/models/background_service_model.dart';
 import 'package:traveler/models/my_place_model.dart';
@@ -145,6 +142,10 @@ class SupabaseApiService {
         log('Fetched Saved Locations');
 
         final List<dynamic> placeList = jsonDecode(response.body);
+
+        log('Fetched Saved Locations: ${placeList.length}');
+        log('Fetched Saved Locations: $placeList');
+
         return placeList
         .map((json) => BackgroundServiceModel.fromJson(json as Map<String, dynamic>))
         .toList();
@@ -155,8 +156,10 @@ class SupabaseApiService {
       }
     }
     catch(e){
-      log('Error: $e');
+      log('Error in background service: $e');
     }
+
+    log("something bad happened to get here");
 
     // Return a Null value because an error has occured
     return Future.value([]);
