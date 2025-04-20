@@ -1,9 +1,9 @@
 <!---
 
 ---
-title: "CASA0017: Web Architecture Final Assessment"
-author: "Steven Gray"
-date: "10 Dec 2021"
+title: "CASA0017: Traveler"
+author: "Vineeth Kirandumkara"
+date: "20 April 2025"
 ---
 
 -->
@@ -20,10 +20,30 @@ Upload this PDF into Moodle for submission including a copy of your presentation
 
 ## Link to GitHub Repository
 
-Flutter Application Name - MY APPLICATION NAME
+Flutter Application Name - Traveler
 GitHub Repository - [https://github.com/ucl-casa-ce/casa0015-mobile-assessment](https://github.com/ucl-casa-ce/casa0015-mobile-assessment)
 
 ## Introduction to Application
+
+Traveler is your companion app for traveling. Whether it's within your hometown, or traveling to the other side of the world, Traveler allows you to save every place you would like to visit, and reminds you when you are nearby it! Simply save a place that you've been wanting to visit, and the next time you are in the area, Traveler will give you a notification to remind you to check it out!
+
+## Packages
+[flutter_launch_icons]()
+[flutter_native_splash]()
+[go_router]()
+[google_maps_flutter]()
+[http]()
+[json_annotation]()
+[json_serializable]()
+[flutter_secure_storage]()
+[google_places_flutter]()
+[geocoding]()
+[geolocator]()
+[flutter_dotenv]()
+[supabase_flutter]()
+[background_fetch]()
+[flutter_local_notifications]()
+
 
 A brief 200 word explanation of your application and it's use.  Below create a Bibliography to code, tutorial, or plugins you've used in the project. Use this guide
 for citation - [https://www.scribbr.co.uk/referencing/harvard-website-reference/](https://www.scribbr.co.uk/referencing/harvard-website-reference/)
@@ -38,9 +58,9 @@ for citation - [https://www.scribbr.co.uk/referencing/harvard-website-reference/
 
 ## Declaration of Authorship
 
-We, AUTHORS NAME HERE, confirm that the work presented in this assessment is my own. Where information has been derived from other sources, I confirm that this has been indicated in the work.
+I, Vineeth Kirandumkara, confirm that the work presented in this assessment is my own. Where information has been derived from other sources, I confirm that this has been indicated in the work.
 
 
-Digitally Sign with Your name Here
+Vineeth Kirandumkara
 
-ASSESSMENT DATE
+20, April 2025
