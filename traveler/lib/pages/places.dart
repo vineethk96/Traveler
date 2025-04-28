@@ -73,7 +73,7 @@ class _PlacesPageState extends State<PlacesPage> {
             );
           }
           
-          final locationList = snapshot.data!;
+          final locationList = snapshot.data!.reversed.toList();
           if (locationList.isEmpty) {
             return const Center(
               child: Text('No saved locations yet.'),
@@ -92,6 +92,7 @@ class _PlacesPageState extends State<PlacesPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
+
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +120,7 @@ class _PlacesPageState extends State<PlacesPage> {
                       const SizedBox(height: 8),
 
                       Text(
-                        'Place ID: ${location.placeId}',
+                        location.title,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,

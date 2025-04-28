@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:traveler/auth/secure_storage_service.dart';
 import 'package:traveler/models/add_place_model.dart';
 import 'package:traveler/models/background_service_model.dart';
+import 'package:traveler/models/map_places_model.dart';
 import 'package:traveler/models/my_place_model.dart';
 import 'package:traveler/models/userId_model.dart';
 
@@ -160,6 +161,49 @@ class SupabaseApiService {
     }
 
     log("something bad happened to get here");
+
+    // Return a Null value because an error has occured
+    return Future.value([]);
+  }
+
+  // POST Req: Get Locations for the Map page
+    // POST Req: Get Locations for the My Places page
+  Future<List<MapPlacesModel>> fetchMapLocations(UserIdModel userId) async{
+    
+    final url = Uri.parse('$supabaseUrl/functions/v1/get_locations');
+    log("url: $url");
+
+    final http.Response response;
+
+    log('response was made');
+
+    try{
+      log('Sending request to fetch saved locations');
+      response = await http.post(
+        url,
+        headers: defaultHeaders,
+        body: jsonEncode(userId.toJson()),
+      );
+
+      log('Response: ${response.body}');
+      
+      // Check the response status code
+      if(response.statusCode == 200){
+
+        final List<dynamic> placeList = jsonDecode(response.body);
+        log('Fetched Saved Locations: ${placeList.length}');
+        return placeList
+        .map((json) => MapPlacesModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+      }
+      else{
+        log('Failed to fetch locations: ${response.statusCode}');
+      }
+    }
+    catch(e){
+      log('Error: $e');
+    }
 
     // Return a Null value because an error has occured
     return Future.value([]);

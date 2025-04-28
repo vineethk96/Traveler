@@ -27,6 +27,7 @@ class _AddPlacePage extends State<AddPlacePage>{
   late String apiKey;                                                           // The API Key for Google Maps
   final TextEditingController _searchController = TextEditingController();      // The text controller for the search box
   final TextEditingController _descriptionController = TextEditingController(); // The text controller for the description box
+  final TextEditingController _titleController = TextEditingController();      // The text controller for the title box
   LatLng searchedLocation = LatLng(45.521563, -122.677433);                     // Default Location on the map
   Set<Marker> _visibleMarkers = {};                                             // The markers that are visible on the map
   late String placeId;
@@ -137,6 +138,7 @@ class _AddPlacePage extends State<AddPlacePage>{
                       updateMapLocation();
                     },
                     itemClick: (Prediction prediction){
+                      _titleController.text = prediction.description ?? ""; // Auto Fill the Title
                       _searchController.text = prediction.description ?? "";
                       _searchController.selection = TextSelection.fromPosition(
                         TextPosition(
@@ -169,6 +171,16 @@ class _AddPlacePage extends State<AddPlacePage>{
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(hintText: "Add Title Here, Defaults to Searched Location"),
+                  )
+                ),
+
+
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
                     controller: _descriptionController,
                     decoration: InputDecoration(hintText: "Description"),
                   )
@@ -182,7 +194,8 @@ class _AddPlacePage extends State<AddPlacePage>{
                       userId: Supabase.instance.client.auth.currentUser?.id ?? '',
                       gmapsId: placeId,
                       info: _descriptionController.text,
-                      latLng: searchedLocation
+                      latLng: searchedLocation,
+                      title: _titleController.text,
                     );
 
                     // Send the POST Req
