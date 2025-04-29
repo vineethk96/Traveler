@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           // Logo
           Container(
             padding: const EdgeInsets.all(20),
-            child: Image.asset('assets/images/logo.png'),
+            child: Image.asset('assets/images/splash.png'),
           ),
 
           // Email Input
